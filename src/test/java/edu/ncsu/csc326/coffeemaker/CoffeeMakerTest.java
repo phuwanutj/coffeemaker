@@ -16,15 +16,15 @@
  * 20171114 - Ian De Silva - Updated to comply with JUnit 4 and to adhere to 
  *                           coding standards.  Added test documentation.
  */
-package edu.ncsu.csc326.coffeemaker;
+package src.main.java.edu.ncsu.csc326.coffeemaker;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import edu.ncsu.csc326.coffeemaker.exceptions.InventoryException;
-import edu.ncsu.csc326.coffeemaker.exceptions.RecipeException;
+import src.main.java.edu.ncsu.csc326.coffeemaker.exceptions.InventoryException;
+import src.main.java.edu.ncsu.csc326.coffeemaker.exceptions.RecipeException;
 
 /**
  * Unit tests for CoffeeMaker class.
@@ -100,7 +100,7 @@ public class CoffeeMakerTest {
         assertTrue(coffeeMaker.addRecipe(recipe1));
         assertTrue(coffeeMaker.addRecipe(recipe2));
         assertTrue(coffeeMaker.addRecipe(recipe3));
-        assertTrue(coffeeMaker.addRecipe(recipe4));
+        assertFalse(coffeeMaker.addRecipe(recipe4));
     }
     
     /**
@@ -113,18 +113,19 @@ public class CoffeeMakerTest {
     }
     
     /**
-     * Test deleting a recipe.
-     */    
+     * Test deleting a recipe that does not exist.
+     */
     @Test
     public void testDeleteRecipe() {
         coffeeMaker.addRecipe(recipe1);
         coffeeMaker.deleteRecipe(0);
         assertNotEquals(recipe1, coffeeMaker.getRecipes()[0]);
+        assertNull(coffeeMaker.getRecipes()[0]);
     }
-
+    
     /**
      * Test deleting a recipe that does not exist.
-     */        
+     */
     @Test
     public void testDeleteRecipeThatDoesNotExist() {
         assertNull(coffeeMaker.deleteRecipe(2));
@@ -132,13 +133,14 @@ public class CoffeeMakerTest {
     
     /**
      * Test editing a recipe.
-     */    
+     */
     @Test
     public void testEditRecipe() {
         coffeeMaker.addRecipe(recipe1);
         coffeeMaker.addRecipe(recipe2);
         coffeeMaker.editRecipe(1, recipe1);
         assertEquals(recipe1, coffeeMaker.getRecipes()[1]);
+        assertEquals(recipe2.getName(), coffeeMaker.getRecipes()[1].getName());
     }
     
     /**
@@ -222,17 +224,16 @@ public class CoffeeMakerTest {
     }
     
     /**
-     * Test if checkInventory return a correct value.
+     * Test if the inventory has been update correctly after setting new inventory value.
      */
     @Test
     public void testCheckInventory() {
-        CoffeeMaker maker = new CoffeeMaker();
         Inventory inventory = new Inventory();
         inventory.setCoffee(3);
         inventory.setMilk(4);
         inventory.setSugar(5);
         inventory.setChocolate(6);
-        assertEquals("Coffee: 3\nMilk: 4\nSugar: 5\nChocolate: 6\n", maker.checkInventory());
+        assertEquals("Coffee: 3\nMilk: 4\nSugar: 5\nChocolate: 6\n", coffeeMaker.checkInventory());
     }
     
     /**
@@ -242,9 +243,7 @@ public class CoffeeMakerTest {
     public void testMakeCoffeeWithValidInput() {
         coffeeMaker.addRecipe(recipe1);
         coffeeMaker.addRecipe(recipe2);
-        coffeeMaker.addRecipe(recipe3);
-        coffeeMaker.addRecipe(recipe4);
-        assertEquals(35, coffeeMaker.makeCoffee(3, 100));
+        assertEquals(50, coffeeMaker.makeCoffee(0, 100));
         assertEquals(0, coffeeMaker.makeCoffee(0, 50));
     }
 
@@ -266,12 +265,30 @@ public class CoffeeMakerTest {
     }
     
     /**
-     * Test purchase of beverage when amount paid is negative or lower than the price.
+     * Test purchase of beverage when amount paid is negative.
      */
     @Test 
-    public void testMakeCoffeeWithInvalidPrice() {
+    public void testMakeCoffeeWithNegativePrice() {
         coffeeMaker.addRecipe(recipe1);
-        assertEquals(0, coffeeMaker.makeCoffee(0, -17));
-        assertEquals(120, coffeeMaker.makeCoffee(0, 170));
+        assertEquals(-17, coffeeMaker.makeCoffee(0, -17));
+    }
+    
+    /**
+     * Test if the inventory has been update correctly after purchase of beverage.
+     */
+    @Test
+    public void testCheckInventoryAfterPurchase() {
+        coffeeMaker.addRecipe(recipe1);
+        assertEquals(50, coffeeMaker.makeCoffee(0, 100));
+        assertEquals("Coffee: 12\nMilk: 14\nSugar: 14\nChocolate: 15\n", coffeeMaker.checkInventory());
+    }
+    
+    /**
+     * Test editing a recipe that does not exist.
+     */
+    @Test
+    public void testEditRecipeThatDoesNotExist() {
+        coffeeMaker.addRecipe(recipe1);
+        assertNull(coffeeMaker.editRecipe(1, recipe1));
     }
 }
