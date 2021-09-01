@@ -16,15 +16,15 @@
  * 20171114 - Ian De Silva - Updated to comply with JUnit 4 and to adhere to 
  *                           coding standards.  Added test documentation.
  */
-package src.main.java.edu.ncsu.csc326.coffeemaker;
+package edu.ncsu.csc326.coffeemaker;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import src.main.java.edu.ncsu.csc326.coffeemaker.exceptions.InventoryException;
-import src.main.java.edu.ncsu.csc326.coffeemaker.exceptions.RecipeException;
+import edu.ncsu.csc326.coffeemaker.exceptions.InventoryException;
+import edu.ncsu.csc326.coffeemaker.exceptions.RecipeException;
 
 /**
  * Unit tests for CoffeeMaker class.
@@ -43,6 +43,10 @@ public class CoffeeMakerTest {
     private Recipe recipe2;
     private Recipe recipe3;
     private Recipe recipe4;
+    private Recipe recipe5;
+    private Recipe recipe6;
+    private Recipe recipe7;
+    private Recipe recipe8;
 
     /**
      * Initializes some recipes to test with and the {@link CoffeeMaker} 
@@ -90,6 +94,42 @@ public class CoffeeMakerTest {
         recipe4.setAmtMilk("1");
         recipe4.setAmtSugar("1");
         recipe4.setPrice("65");
+
+        //Set up for r5
+        recipe5 = new Recipe();
+        recipe5.setName("Coffee2");
+        recipe5.setAmtChocolate("4");
+        recipe5.setAmtCoffee("20");
+        recipe5.setAmtMilk("2");
+        recipe5.setAmtSugar("2");
+        recipe5.setPrice("100");
+
+        //Set up for r6
+        recipe6 = new Recipe();
+        recipe6.setName("Milk2");
+        recipe6.setAmtChocolate("4");
+        recipe6.setAmtCoffee("5");
+        recipe6.setAmtMilk("20");
+        recipe6.setAmtSugar("2");
+        recipe6.setPrice("100");
+
+        //Set up for r7
+        recipe7 = new Recipe();
+        recipe7.setName("Sugar2");
+        recipe7.setAmtChocolate("4");
+        recipe7.setAmtCoffee("5");
+        recipe7.setAmtMilk("8");
+        recipe7.setAmtSugar("20");
+        recipe7.setPrice("100");
+
+        //Set up for r8
+        recipe8 = new Recipe();
+        recipe8.setName("Chocolate2");
+        recipe8.setAmtChocolate("40");
+        recipe8.setAmtCoffee("5");
+        recipe8.setAmtMilk("8");
+        recipe8.setAmtSugar("2");
+        recipe8.setPrice("100");
     }
     
     /**
@@ -290,5 +330,137 @@ public class CoffeeMakerTest {
     public void testEditRecipeThatDoesNotExist() {
         coffeeMaker.addRecipe(recipe1);
         assertNull(coffeeMaker.editRecipe(1, recipe1));
+    }
+
+    /**
+     * Test adding chocolate when the value is negative.
+     *
+     * @throws InventoryException  if there was an error parsing the quanity
+     *      to a positive integer.
+     */
+    @Test (expected = InventoryException.class)
+    public void testAddChocolateWithNegativeValue() throws InventoryException {
+        Inventory inventory = new Inventory();
+        inventory.addChocolate("-35");
+    }
+
+    /**
+     * Test adding chocolate when the value is alphabet.
+     *
+     * @throws InventoryException  if there was an error parsing the quanity
+     *      to a positive integer.
+     */
+    @Test (expected = InventoryException.class)
+    public void testAddChocolateWithAlphabetAsValue() throws InventoryException {
+        Inventory inventory = new Inventory();
+        inventory.addChocolate("a");
+    }
+
+    /**
+     * Test adding coffee when the value is negative.
+     *
+     * @throws InventoryException  if there was an error parsing the quanity
+     *      to a positive integer.
+     */
+    @Test (expected = InventoryException.class)
+    public void testAddCoffeeWithNegativeValue() throws InventoryException {
+        Inventory inventory = new Inventory();
+        inventory.addCoffee("-35");
+    }
+
+    /**
+     * Test adding coffee when the value is alphabet.
+     *
+     * @throws InventoryException  if there was an error parsing the quanity
+     *      to a positive integer.
+     */
+    @Test (expected = InventoryException.class)
+    public void testAddCoffeeWithAlphabetAsValue() throws InventoryException {
+        Inventory inventory = new Inventory();
+        inventory.addCoffee("a");
+    }
+
+    /**
+     * Test adding milk when the value is negative.
+     *
+     * @throws InventoryException  if there was an error parsing the quanity
+     *      to a positive integer.
+     */
+    @Test (expected = InventoryException.class)
+    public void testAddMilkWithNegativeValue() throws InventoryException {
+        Inventory inventory = new Inventory();
+        inventory.addMilk("-35");
+    }
+
+    /**
+     * Test adding milk when the value is alphabet.
+     *
+     * @throws InventoryException  if there was an error parsing the quanity
+     *      to a positive integer.
+     */
+    @Test (expected = InventoryException.class)
+    public void testAddMilkWithAlphabetAsValue() throws InventoryException {
+        Inventory inventory = new Inventory();
+        inventory.addMilk("a");
+    }
+
+    /**
+     * Test adding sugar when the value is negative.
+     *
+     * @throws InventoryException  if there was an error parsing the quanity
+     *      to a positive integer.
+     */
+    @Test (expected = InventoryException.class)
+    public void testAddSugarWithNegativeValue() throws InventoryException {
+        Inventory inventory = new Inventory();
+        inventory.addSugar("-35");
+    }
+
+    /**
+     * Test adding sugar when the value is alphabet.
+     *
+     * @throws InventoryException  if there was an error parsing the quanity
+     *      to a positive integer.
+     */
+    @Test (expected = InventoryException.class)
+    public void testAddSugarWithAlphabetAsValue() throws InventoryException {
+        Inventory inventory = new Inventory();
+        inventory.addSugar("a");
+    }
+
+    /**
+     * Test purchase of beverage when coffee is not enough.
+     */
+    @Test
+    public void testMakeCoffeeWithNotEnoughCoffee() {
+        coffeeMaker.addRecipe(recipe5);
+        assertEquals(150, coffeeMaker.makeCoffee(0, 150));
+    }
+
+    /**
+     * Test purchase of beverage when milk is not enough.
+     */
+    @Test
+    public void testMakeCoffeeWithNotEnoughMilk() {
+        coffeeMaker.addRecipe(recipe6);
+        assertEquals(150, coffeeMaker.makeCoffee(0, 150));
+    }
+
+    /**
+     * Test purchase of beverage when sugar is not enough.
+     */
+    @Test
+    public void testMakeCoffeeWithNotEnoughSugar() {
+        coffeeMaker.addRecipe(recipe7);
+        assertEquals(150, coffeeMaker.makeCoffee(0, 150));
+    }
+
+    /**
+     * Test purchase of beverage when chocolate is not enough.
+     */
+    @Test
+    public void testMakeCoffeeWithNotEnoughChocolate() {
+        coffeeMaker.addRecipe(recipe8);
+        assertEquals(150, coffeeMaker.makeCoffee(0, 150));
     }
 }
