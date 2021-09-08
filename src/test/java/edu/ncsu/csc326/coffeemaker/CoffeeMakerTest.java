@@ -19,6 +19,7 @@
 package edu.ncsu.csc326.coffeemaker;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,10 @@ public class CoffeeMakerTest {
      * The object under test.
      */
     private CoffeeMaker coffeeMaker;
-    
+    private CoffeeMaker coffeeMaker2;
+    private RecipeBook recipeBookStub;
+    private Recipe [] stubRecipies;
+
     // Sample recipes to use in testing.
     private Recipe recipe1;
     private Recipe recipe2;
@@ -58,7 +62,10 @@ public class CoffeeMakerTest {
     @Before
     public void setUp() throws RecipeException {
         coffeeMaker = new CoffeeMaker();
-        
+
+        recipeBookStub = mock(RecipeBook.class);
+        coffeeMaker2 = new CoffeeMaker(recipeBookStub, new Inventory());
+
         //Set up for r1
         recipe1 = new Recipe();
         recipe1.setName("Coffee");
@@ -130,6 +137,8 @@ public class CoffeeMakerTest {
         recipe8.setAmtMilk("8");
         recipe8.setAmtSugar("2");
         recipe8.setPrice("100");
+
+        stubRecipies = new Recipe [] {recipe1, recipe2, recipe3};
     }
     
     /**
@@ -462,5 +471,45 @@ public class CoffeeMakerTest {
     public void testMakeCoffeeWithNotEnoughChocolate() {
         coffeeMaker.addRecipe(recipe8);
         assertEquals(150, coffeeMaker.makeCoffee(0, 150));
+    }
+
+    /**
+     * Test purchase of beverage with valid recipe.
+     */
+    @Test
+    public void testMakeCoffeeWithValidRecipeUsingMock() {
+        when(coffeeMaker2.getRecipes()).thenReturn(stubRecipies);
+        assertEquals(50, coffeeMaker2.makeCoffee(0, 100));
+        assertEquals(0, coffeeMaker2.makeCoffee(2, 100));
+    }
+
+    /**
+     * Test purchase of beverage when the inventory is not enough.
+     */
+    @Test
+    public void testMakeCoffeeWithNotEnoughInventoryUsingMock() {
+        when(coffeeMaker2.getRecipes()).thenReturn(stubRecipies);
+        assertEquals(100, coffeeMaker2.makeCoffee(1, 100));
+        assertEquals("Coffee: 15\nMilk: 15\nSugar: 15\nChocolate: 15\n", coffeeMaker2.checkInventory());
+    }
+
+    /**
+     * Test purchase of beverage and check if the inventory is updated correctly.
+     */
+    @Test
+    public void testMakeCoffeeAndThenCheckTheInventoryUsingMock() {
+        when(coffeeMaker2.getRecipes()).thenReturn(stubRecipies);
+        coffeeMaker2.makeCoffee(2, 100);
+        assertEquals("Coffee: 12\nMilk: 12\nSugar: 14\nChocolate: 15\n", coffeeMaker2.checkInventory());
+    }
+
+    /**
+     * Test purchase of beverage when the money is not enough.
+     */
+    @Test
+    public void testMakeCoffeeWithNotEnoughMoneyUsingMock() {
+        when(coffeeMaker2.getRecipes()).thenReturn(stubRecipies);
+        assertEquals(25, coffeeMaker2.makeCoffee(0, 25));
+        assertEquals("Coffee: 15\nMilk: 15\nSugar: 15\nChocolate: 15\n", coffeeMaker2.checkInventory());
     }
 }
