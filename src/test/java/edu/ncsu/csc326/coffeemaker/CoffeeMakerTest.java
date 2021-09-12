@@ -67,7 +67,7 @@ public class CoffeeMakerTest {
         coffeeMaker2 = new CoffeeMaker(recipeBookStub, new Inventory());
 
         //Set up for r1
-        recipe1 = new Recipe();
+        recipe1 = spy(new Recipe());
         recipe1.setName("Coffee");
         recipe1.setAmtChocolate("0");
         recipe1.setAmtCoffee("3");
@@ -76,7 +76,7 @@ public class CoffeeMakerTest {
         recipe1.setPrice("50");
         
         //Set up for r2
-        recipe2 = new Recipe();
+        recipe2 = spy(new Recipe());
         recipe2.setName("Mocha");
         recipe2.setAmtChocolate("20");
         recipe2.setAmtCoffee("3");
@@ -85,7 +85,7 @@ public class CoffeeMakerTest {
         recipe2.setPrice("75");
         
         //Set up for r3
-        recipe3 = new Recipe();
+        recipe3 = spy(new Recipe());
         recipe3.setName("Latte");
         recipe3.setAmtChocolate("0");
         recipe3.setAmtCoffee("3");
@@ -474,42 +474,102 @@ public class CoffeeMakerTest {
     }
 
     /**
-     * Test purchase of beverage with valid recipe.
+     * Test purchase of beverage with valid recipe and verify the number of invokes for each method.
      */
     @Test
-    public void testMakeCoffeeWithValidRecipeUsingMock() {
+    public void testMakeCoffeeWithValidRecipeAndVerifyInvoke() {
         when(coffeeMaker2.getRecipes()).thenReturn(stubRecipies);
         assertEquals(50, coffeeMaker2.makeCoffee(0, 100));
         assertEquals(0, coffeeMaker2.makeCoffee(2, 100));
+        verify(recipe1, times(2)).getPrice();
+        verify(recipe1, times(2)).getAmtChocolate();
+        verify(recipe1, times(2)).getAmtCoffee();
+        verify(recipe1, times(2)).getAmtMilk();
+        verify(recipe1, times(2)).getAmtSugar();
+        verify(recipe2, never()).getPrice();
+        verify(recipe2, never()).getAmtChocolate();
+        verify(recipe2, never()).getAmtCoffee();
+        verify(recipe2, never()).getAmtMilk();
+        verify(recipe2, never()).getAmtSugar();
+        verify(recipe3, times(2)).getPrice();
+        verify(recipe3, times(2)).getAmtChocolate();
+        verify(recipe3, times(2)).getAmtCoffee();
+        verify(recipe3, times(2)).getAmtMilk();
+        verify(recipe3, times(2)).getAmtSugar();
     }
 
     /**
-     * Test purchase of beverage when the inventory is not enough.
+     * Test purchase of beverage when the inventory is not enough and verify the number of invokes for each method.
      */
     @Test
-    public void testMakeCoffeeWithNotEnoughInventoryUsingMock() {
+    public void testMakeCoffeeWithNotEnoughInventoryAndVerifyInvoke() {
         when(coffeeMaker2.getRecipes()).thenReturn(stubRecipies);
         assertEquals(100, coffeeMaker2.makeCoffee(1, 100));
         assertEquals("Coffee: 15\nMilk: 15\nSugar: 15\nChocolate: 15\n", coffeeMaker2.checkInventory());
+        verify(recipe1, never()).getPrice();
+        verify(recipe1, never()).getAmtChocolate();
+        verify(recipe1, never()).getAmtCoffee();
+        verify(recipe1, never()).getAmtMilk();
+        verify(recipe1, never()).getAmtSugar();
+        verify(recipe2, times(1)).getPrice();
+        verify(recipe2, times(1)).getAmtChocolate();
+        verify(recipe2, times(1)).getAmtCoffee();
+        verify(recipe2, times(1)).getAmtMilk();
+        verify(recipe2, times(1)).getAmtSugar();
+        verify(recipe3, never()).getPrice();
+        verify(recipe3, never()).getAmtChocolate();
+        verify(recipe3, never()).getAmtCoffee();
+        verify(recipe3, never()).getAmtMilk();
+        verify(recipe3, never()).getAmtSugar();
     }
 
     /**
-     * Test purchase of beverage and check if the inventory is updated correctly.
+     * Test purchase of beverage, check if the inventory is updated correctly and verify the number of invokes for each method.
      */
     @Test
-    public void testMakeCoffeeAndThenCheckTheInventoryUsingMock() {
+    public void testMakeCoffeeThenCheckTheInventoryAndVerifyInvoke() {
         when(coffeeMaker2.getRecipes()).thenReturn(stubRecipies);
         coffeeMaker2.makeCoffee(2, 100);
         assertEquals("Coffee: 12\nMilk: 12\nSugar: 14\nChocolate: 15\n", coffeeMaker2.checkInventory());
+        verify(recipe1, never()).getPrice();
+        verify(recipe1, never()).getAmtChocolate();
+        verify(recipe1, never()).getAmtCoffee();
+        verify(recipe1, never()).getAmtMilk();
+        verify(recipe1, never()).getAmtSugar();
+        verify(recipe2, never()).getPrice();
+        verify(recipe2, never()).getAmtChocolate();
+        verify(recipe2, never()).getAmtCoffee();
+        verify(recipe2, never()).getAmtMilk();
+        verify(recipe2, never()).getAmtSugar();
+        verify(recipe3, times(2)).getPrice();
+        verify(recipe3, times(2)).getAmtChocolate();
+        verify(recipe3, times(2)).getAmtCoffee();
+        verify(recipe3, times(2)).getAmtMilk();
+        verify(recipe3, times(2)).getAmtSugar();
     }
 
     /**
-     * Test purchase of beverage when the money is not enough.
+     * Test purchase of beverage when the money is not enough and verify the number of invokes for each method.
      */
     @Test
-    public void testMakeCoffeeWithNotEnoughMoneyUsingMock() {
+    public void testMakeCoffeeWithNotEnoughMoneyAndVerifyInvoke() {
         when(coffeeMaker2.getRecipes()).thenReturn(stubRecipies);
         assertEquals(25, coffeeMaker2.makeCoffee(0, 25));
         assertEquals("Coffee: 15\nMilk: 15\nSugar: 15\nChocolate: 15\n", coffeeMaker2.checkInventory());
+        verify(recipe1, times(1)).getPrice();
+        verify(recipe1, never()).getAmtChocolate();
+        verify(recipe1, never()).getAmtCoffee();
+        verify(recipe1, never()).getAmtMilk();
+        verify(recipe1, never()).getAmtSugar();
+        verify(recipe2, never()).getPrice();
+        verify(recipe2, never()).getAmtChocolate();
+        verify(recipe2, never()).getAmtCoffee();
+        verify(recipe2, never()).getAmtMilk();
+        verify(recipe2, never()).getAmtSugar();
+        verify(recipe3, never()).getPrice();
+        verify(recipe3, never()).getAmtChocolate();
+        verify(recipe3, never()).getAmtCoffee();
+        verify(recipe3, never()).getAmtMilk();
+        verify(recipe3, never()).getAmtSugar();
     }
 }
