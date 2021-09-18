@@ -18,7 +18,6 @@
 package edu.ncsu.csc326.coffeemaker;
 
 import cucumber.api.java.en.*;
-import edu.ncsu.csc326.coffeemaker.CoffeeMaker;
 
 import static org.junit.Assert.*;
 
@@ -31,8 +30,7 @@ public class TestSteps {
     private Recipe recipe1;
     private Recipe recipe2;
     private Recipe recipe3;
-    private Recipe recipe4;
-    private Recipe recipe5;
+    private Recipe chosen_recipe;
     private CoffeeMaker coffeeMaker;
     private RecipeBook recipeBook;
     private int recipeId;
@@ -83,24 +81,6 @@ public class TestSteps {
         recipe3.setAmtSugar("1");
         recipe3.setPrice("100");
 
-        //Set up for r4
-        recipe4 = new Recipe();
-        recipe4.setName("Hot Chocolate");
-        recipe4.setAmtChocolate("4");
-        recipe4.setAmtCoffee("0");
-        recipe4.setAmtMilk("1");
-        recipe4.setAmtSugar("1");
-        recipe4.setPrice("65");
-
-        //Set up for r5 (added by MWW)
-        recipe5 = new Recipe();
-        recipe5.setName("Super Hot Chocolate");
-        recipe5.setAmtChocolate("6");
-        recipe5.setAmtCoffee("0");
-        recipe5.setAmtMilk("1");
-        recipe5.setAmtSugar("1");
-        recipe5.setPrice("100");
-
         recipeBook.addRecipe(recipe1);
         recipeBook.addRecipe(recipe2);
         recipeBook.addRecipe(recipe3);
@@ -110,13 +90,55 @@ public class TestSteps {
     public void iPaidForRecipe(int recipe, int money) throws Throwable {
         String beverage = coffeeMaker.getRecipes()[recipe].getName();
         String amount = String.valueOf(money);
-        this.recipeId = recipe;
-        this.moneyPaid = money;
+        recipeId = recipe;
+        moneyPaid = money;
         System.out.println("I paid for " + beverage + " with " + amount + "Baht");
     }
 
     @Then("I receive (\\d+) Baht as changes")
     public void iRecieveChanges(int changes) throws Throwable {
         assertEquals(changes, coffeeMaker.makeCoffee(this.recipeId, this.moneyPaid));
+    }
+
+    @When("I create a new recipe called (\\w+)")
+    public void iCreateANewRecipe(String name) throws Throwable {
+        Recipe recipe4 = new Recipe();
+        recipe4.setName(name);
+        recipe4.setAmtChocolate("4");
+        recipe4.setAmtCoffee("0");
+        recipe4.setAmtMilk("1");
+        recipe4.setAmtSugar("1");
+        recipe4.setPrice("65");
+        chosen_recipe = recipe4;
+    }
+
+    @Then("I add new recipe to recipe book")
+    public void iAddANewRecipe() throws Throwable {
+        assertTrue(coffeeMaker.addRecipe(chosen_recipe));
+    }
+
+    @When("I choose to delete recipe (\\d+)")
+    public void iChooseToDeleteRecipe(int recipe) throws Throwable {
+        recipeId = recipe;
+    }
+
+    @Then("I delete that recipe from recipe book")
+    public void iDeleteRecipe() throws Throwable {
+        coffeeMaker.deleteRecipe(recipeId);
+        int recipeSize = coffeeMaker.getRecipes().length;
+        assertNotEquals(3, recipeSize);
+    }
+
+    @When("I want to edit recipe (\\d+) to be change sugar amount to (\\d+)")
+    public void iWantToEditRecipe(int recipe, int sugarAmount) throws Throwable {
+        recipeId = recipe;
+        Recipe recipe4 = coffeeMaker.getRecipes()[recipeId];
+        recipe4.setAmtSugar(Integer.toString(sugarAmount));
+        coffeeMaker.editRecipe(recipeId, recipe4);
+    }
+
+    @Then("that recipe has (\\d+) units of sugar")
+    public void thatRecipeBecome(int sugarAmount) throws Throwable {
+        assertEquals(sugarAmount, coffeeMaker.getRecipes()[recipeId].getAmtSugar());
     }
 }
